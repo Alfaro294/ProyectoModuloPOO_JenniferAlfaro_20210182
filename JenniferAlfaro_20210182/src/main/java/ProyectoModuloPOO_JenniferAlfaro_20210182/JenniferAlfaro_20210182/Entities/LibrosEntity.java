@@ -28,9 +28,6 @@ public class LibrosEntity {
     private Date año_publicacion;
     @Column (name = "GENERO")
     private String genero;
-
-    // Referencia a llave foranea
-    @ManyToOne
-    @JoinColumn (name = "autor_id", referencedColumnName = "id")
+    @Column (name = "AUTOR_ID")
     private Long autor_id;
 }
