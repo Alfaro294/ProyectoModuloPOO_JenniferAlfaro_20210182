@@ -57,7 +57,7 @@ public class ControllerLibros {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
                             "Status", "Error",
-                            "Message", "Erro al registrar",
+                            "Message", "Error al registrar",
                             "detail", e.getMessage()
                     ));
         }
