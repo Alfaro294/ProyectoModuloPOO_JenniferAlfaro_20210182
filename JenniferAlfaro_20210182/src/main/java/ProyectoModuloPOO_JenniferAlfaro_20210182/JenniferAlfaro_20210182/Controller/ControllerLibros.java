@@ -1,15 +1,19 @@
 package ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Controller;
 
 import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Entities.LibrosEntity;
+import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Exceptions.ExceptionLibros;
 import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Models.DTO.LibrosDTO;
 import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Services.ServiceLibros;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import javax.naming.Binding;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +35,51 @@ public class ControllerLibros {
         return ResponseEntity.ok(librosDTOS);
     }
     @PostMapping("/newBooks")
-    private ResponseEntity<Map<String, Object>>Insert
+    private ResponseEntity<Map<String, Object>>insertBooks(@Valid @RequestBody LibrosDTO json, HttpServletRequest request){
+        try {
+            LibrosDTO response = serviceLibros.insertBooks(json);
+            if (response == null) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "Error", "Inserción Incorrecta",
+                        "Estatus", "Inserción Incorrecta",
+                        "Descripcion", "Verifique valores"
+                ));
+            }
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of(
+                            "Estado", "Completado",
+                            "data", response
+                    ));
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "Status", "Error",
+                            "Message", "Erro al registrar",
+                            "detail", e.getMessage()
+                    ));
+        }
+        }
+        @PutMapping("/updateBooks/{id}")
+    public ResponseEntity<?>update(
+            @PathVariable Long id, @Valid @RequestBody LibrosDTO libros, BindingResult bindingResult
+        ){
+            if (bindingResult.hasErrors()) {
+                Map<String,String> errores = new HashMap<>();bindingResult.getFieldErrors().forEach(error -> errores .put(error.getField(), error.getDefaultMessage());
+                return ResponseEntity.badRequest().body(errores);
+             }
+            try{
+                LibrosDTO libroActualizado = serviceLibros.update(id, libros);
+                return ResponseEntity.ok(libroActualizado);
+            }
+            catch (ExceptionLibros e){
+                return ResponseEntity.notFound().build();
+            }
+            catch (ExceptionColumnDuplicate e){
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "Datos duplicados", "Campo", e.getcolumnDuplicate()));
+            }
+        }
+
+    }
 
 }
