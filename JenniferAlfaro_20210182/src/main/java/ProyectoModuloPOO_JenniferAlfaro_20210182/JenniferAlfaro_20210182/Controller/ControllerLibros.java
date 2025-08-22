@@ -1,6 +1,7 @@
 package ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Controller;
 
 import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Entities.LibrosEntity;
+import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Exceptions.ExceptionColumnDuplicate;
 import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Exceptions.ExceptionLibros;
 import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Models.DTO.LibrosDTO;
 import ProyectoModuloPOO_JenniferAlfaro_20210182.JenniferAlfaro_20210182.Services.ServiceLibros;
@@ -13,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.Binding;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +66,7 @@ public class ControllerLibros {
             @PathVariable Long id, @Valid @RequestBody LibrosDTO libros, BindingResult bindingResult
         ){
             if (bindingResult.hasErrors()) {
-                Map<String,String> errores = new HashMap<>();bindingResult.getFieldErrors().forEach(error -> errores .put(error.getField(), error.getDefaultMessage());
+                Map<String,String> errores = new HashMap<>();bindingResult.getFieldErrors().forEach(error -> errores .put(error.getField(), error.getDefaultMessage()));
                 return ResponseEntity.badRequest().body(errores);
              }
             try{
@@ -76,10 +78,28 @@ public class ControllerLibros {
             }
             catch (ExceptionColumnDuplicate e){
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(Map.of("error", "Datos duplicados", "Campo", e.getcolumnDuplicate()));
+                        .body(Map.of("error", "Datos duplicados", "Campo", e.getColumnDuplicate()));
             }
         }
-
+@DeleteMapping("/deleteLibros/{id}")
+    public ResponseEntity<Map<String,Object>>delete (@PathVariable Long id){
+        try{
+            if (!serviceLibros.delete(id)){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .header("X-Mensaje-Error", "Categoria no encontrada")
+                        .body(Map.of(
+                                "error", "not found",
+                                "mensaje", "El libro no ha sido encontrado",
+                                "timestamp", Instant.now().toString()
+                        ));
+            }
+            return ResponseEntity.ok().body(Map.of("Status", "Proceso completado",
+                    "Mensaje", "Libro eliminado con exito"));
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().body(Map.of("Status", "Error",
+                    "Message", "Error al eliminar el libro", "detail", e.getMessage()));
+        }
+    }
     }
 
-}
+
