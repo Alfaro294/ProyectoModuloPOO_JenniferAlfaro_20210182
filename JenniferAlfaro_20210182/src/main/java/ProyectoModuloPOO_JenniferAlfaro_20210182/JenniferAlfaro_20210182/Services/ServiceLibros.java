@@ -17,13 +17,14 @@ import java.util.stream.Collectors;
 public class ServiceLibros {
     @Autowired
     private LibrosRepository repo;
-
+//Sirve para obtener de los datos insertados en libros
     public List<LibrosDTO>getAllBooks(){
         List<LibrosEntity> libros = repo.findAll();
         return libros.stream()
                 .map(this::converirAllLibrosDTO)
                 .collect(Collectors.toList());
     }
+//Sirve para insertar libros
     public LibrosDTO insertBooks(@Valid LibrosDTO json){
         if (json == null){
             throw new IllegalArgumentException("La información no puede ser nula");
@@ -37,6 +38,7 @@ public class ServiceLibros {
             throw new ExceptionLibros("El libro no pudo ser registrado");
         }
     }
+    //Sirve para validar los datos de dto al momento de actualizar
     public LibrosDTO update(long id, @Valid LibrosDTO json){
         LibrosEntity librosExistente = repo.findById(id).orElseThrow(() -> new ExceptionLibros("Libro no encontrado"));
         //Actualización de campos
@@ -51,17 +53,18 @@ public class ServiceLibros {
         //Convertir a DTO
         return converirAllLibrosDTO(libroActualizado);
     }
-
+//Sirve para verificar la exisencia del archivo en caso este sea elimnado
     public boolean delete (long id){
         LibrosEntity existencia = repo.findById(id).orElse(null);
 
         if (existencia != null){
+            //Elimina segun id
             repo.deleteById(id);
             return true;
         }
         return false;
     }
-
+//Convierte la info a datos a dto, tal como se explico en clase service se lo manda al dto para luego el dto se lo mande a frontend
     private LibrosDTO converirAllLibrosDTO(LibrosEntity objEntity){
         LibrosDTO dtoL = new LibrosDTO();
         dtoL.setId(objEntity.getId());

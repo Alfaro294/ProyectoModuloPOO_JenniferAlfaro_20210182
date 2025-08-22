@@ -8,11 +8,13 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
-
+//Getter y setter
 @Entity @Getter @Setter @ToString @EqualsAndHashCode
+//@Table se especifica el nombre de la tabla del cual son los datos
 @Table (name = "libros")
 public class LibrosEntity {
     @Id
+    //Se especifica el nombre de la secuencia el cual en base de datos se realizo para el id
     @GeneratedValue (strategy = GenerationType.SEQUENCE, generator = "seq_libros")
     @SequenceGenerator(name = "seq_libros", sequenceName = "seq_libros", allocationSize = 1)
     @Column (name = "ID")

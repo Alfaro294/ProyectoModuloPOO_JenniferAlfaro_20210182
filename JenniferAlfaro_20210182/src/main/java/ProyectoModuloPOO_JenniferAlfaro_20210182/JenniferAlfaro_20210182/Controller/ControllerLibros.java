@@ -24,7 +24,7 @@ import java.util.Objects;
 public class ControllerLibros {
     @Autowired
     private ServiceLibros serviceLibros;
-
+//EndPoint Para get
     @GetMapping("/getDataBooks")
     private ResponseEntity <List<LibrosDTO>> getData(){
         List<LibrosDTO> librosDTOS = serviceLibros.getAllBooks();
@@ -36,6 +36,7 @@ public class ControllerLibros {
         }
         return ResponseEntity.ok(librosDTOS);
     }
+    //EndPoint para post (agregar)
     @PostMapping("/newBooks")
     private ResponseEntity<Map<String, Object>>insertBooks(@Valid @RequestBody LibrosDTO json, HttpServletRequest request){
         try {
@@ -61,6 +62,7 @@ public class ControllerLibros {
                     ));
         }
         }
+        //Endpoint para put (actualizar)
         @PutMapping("/updateBooks/{id}")
     public ResponseEntity<?>update(
             @PathVariable Long id, @Valid @RequestBody LibrosDTO libros, BindingResult bindingResult
@@ -81,6 +83,7 @@ public class ControllerLibros {
                         .body(Map.of("error", "Datos duplicados", "Campo", e.getColumnDuplicate()));
             }
         }
+        //EndPoint para eliminar (delete)
 @DeleteMapping("/deleteLibros/{id}")
     public ResponseEntity<Map<String,Object>>delete (@PathVariable Long id){
         try{

@@ -8,10 +8,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
-
+//Getter y Setter
 @Getter @Setter @ToString @EqualsAndHashCode
 public class LibrosDTO {
-
+//Datos segun la base
     private Long id;
 // Para casos not null se utiliza not blank
     @NotBlank(message = "El titulo del libro debe ser obligatorio")
